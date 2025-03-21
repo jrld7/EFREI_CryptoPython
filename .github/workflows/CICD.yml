@@ -1,17 +1,13 @@
-name: Connexion au serveur Alwaysdata
+name: Connexion GitHub -> Alwaysdata
 
-on:
-  push:
-    branches:
-      - main  # Déclenche le workflow lors d’un push sur la branche main
+on: [push]
 
 jobs:
   Connexion:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v3
+      - name: Vérification du dépôt
+        uses: actions/checkout@v4
 
       - name: Connexion SSH avec le serveur Alwaysdata
         uses: appleboy/ssh-action@master
@@ -21,5 +17,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd $HOME/www/
-            echo "Connexion réussie au serveur Alwaysdata !"
-            # Tu peux rajouter ici d'autres commandes, comme un déploiement
+            echo "Connexion réussie depuis GitHub Actions !"
