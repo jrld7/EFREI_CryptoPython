@@ -1,14 +1,22 @@
-name: Industrialisation continue sur le serveur Alwaysdata
-on: push
+name: Connexion GitHub -> Alwaysdata
+
+on: [push]
+
 jobs:
   Connexion:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Connexion SSH avec le serveur
-        uses: appleboy/ssh-action@master
-        with:
-          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd $HOME/www/
+      - name: Vérification du dépôt
+        uses: actions/checkout@v4
+
+      - name: Vérifier la clé privée
+        run: |
+          echo "${{ secrets.SSH_KEY }}" | base64 --decode > id_rsa
+          chmod 600 id_rsa
+          ls -l id_rsa
+          cat id_rsa | head -n 5  # Vérifie que la clé est bien écrite
+
+      - name: Connexion SSH avec le serveur Alwaysdata
+        run: |
+          ssh -i id_rsa -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@ssh-${{ secrets.USERNAME }}.alwaysdata.net "echo 'Connexion réussie depuis GitHub Actions !'"
