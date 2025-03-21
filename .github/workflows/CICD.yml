@@ -17,4 +17,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd $HOME/www/
-            echo "Connexion réussie depuis GitHub Actions !"
+            echo "Connexion réussie depuis GitHub Action !"
