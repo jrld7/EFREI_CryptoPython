@@ -1,57 +1,25 @@
-name: Industrialisation continue sur le serveur Alwaysdata
-on: push
+name: Connexion au serveur Alwaysdata
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow lors d’un push sur la branche main
+
 jobs:
   Connexion:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Connexion SSH avec le serveur
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Connexion SSH avec le serveur Alwaysdata
         uses: appleboy/ssh-action@master
         with:
           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
             cd $HOME/www/
-            echo "Connexion réussie à Alwaysdata !"
-  Copy:
-    needs: Connexion
-    runs-on: ubuntu-latest
-    steps:
-      - name: Connexion SSH avec le serveur
-        uses: appleboy/ssh-action@master
-        with:
-          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            last_directory=$(basename ${{ runner.workspace }})
-            cd $HOME/www/
-            git clone https://github.com/${{ github.repository }}.git
-            # Vérifier si le répertoire de destination existe
-            if [ "$(ls -A ./flaask)" ]; then
-              rsync -r ./$last_directory/ ./flaask
-              rm -rf ./$last_directory
-            else
-              echo "Le répertoire flask de destination sur votre serveur n'existe pas"
-              exit 1
-            fi
-  Restart:
-    needs: Copy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Restart Alwaysdata site
-        run: |
-          response_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST --basic --user "${{ secrets.ALWAYSDATA_TOKEN }}:" https://api.alwaysdata.com/v1/site/${{ secrets.ALWAYSDATA_SITE_ID }}/restart/)
-          # Vérifier le code de réponse HTTP
-          if [ "$response_code" -eq 204 ]; then
-            echo "Relance de votre site réussi"
-          elif [ "$response_code" -eq 404 ]; then
-            echo "Vous n'avez pas renseigner correctement votre secret ALWAYSDATA_SITE_ID"
-            exit 1  # Quitter avec un code d'erreur
-          elif [ "$response_code" -eq 401 ]; then
-            echo "Vous n'avez pas renseigner correctement votre secret ALWAYSDATA_TOKEN"
-          exit 1  # Quitter avec un code d'erreur
-          else
-            echo "Échec du redémarrage avec le code de réponse : $response_code"
-            exit 1  # Quitter avec un code d'erreur
-          fi
+            echo "Connexion réussie au serveur Alwaysdata !"
+            # Tu peux rajouter ici d'autres commandes, comme un déploiement
