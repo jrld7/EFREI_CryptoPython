@@ -1,51 +1,47 @@
 from cryptography.fernet import Fernet
-from flask import Flask, request, jsonify
+from flask import Flask
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return "Bienvenue sur l'API de chiffrement !"
+    return """
+    <h1>Bienvenue sur l'API de chiffrement !</h1>
+    <p>Utilisez les routes suivantes :</p>
+    <ul>
+        <li>/generate_key</li>
+        <li>/encrypt/&lt;key&gt;/&lt;valeur&gt;</li>
+        <li>/decrypt/&lt;key&gt;/&lt;token&gt;</li>
+    </ul>
+    """
 
-# ✅ Route POST /encrypt avec clé personnelle
-@app.route('/encrypt', methods=['POST'])
-def encrypt():
-    data = request.get_json()
-    valeur = data.get('valeur')
-    key = data.get('key')
-
-    if not valeur or not key:
-        return jsonify({'error': 'valeur et key sont requis'}), 400
-
-    try:
-        f = Fernet(key.encode())
-        token = f.encrypt(valeur.encode())
-        return jsonify({'token': token.decode()})
-    except Exception as e:
-        return jsonify({'error': f"Erreur de chiffrement : {str(e)}"}), 400
-
-# ✅ Route POST /decrypt avec clé personnelle
-@app.route('/decrypt', methods=['POST'])
-def decrypt():
-    data = request.get_json()
-    token = data.get('token')
-    key = data.get('key')
-
-    if not token or not key:
-        return jsonify({'error': 'token et key sont requis'}), 400
-
-    try:
-        f = Fernet(key.encode())
-        valeur = f.decrypt(token.encode())
-        return jsonify({'valeur': valeur.decode()})
-    except Exception as e:
-        return jsonify({'error': f"Erreur de déchiffrement : {str(e)}"}), 400
-
-# ✅ Route optionnelle pour générer une clé Fernet
-@app.route('/generate_key', methods=['GET'])
+# ✅ Génération de clé unique
+@app.route('/generate_key')
 def generate_key():
     key = Fernet.generate_key()
-    return jsonify({'key': key.decode()})
+    return f"Voici votre clé personnelle : {key.decode()}"
+
+# ✅ Route pour chiffrer avec une clé fournie
+@app.route('/encrypt/<key>/<valeur>')
+def encryptage(key, valeur):
+    try:
+        f = Fernet(key.encode())  # On utilise la clé fournie
+        valeur_bytes = valeur.encode()
+        token = f.encrypt(valeur_bytes)
+        return f"Valeur encryptée : {token.decode()}"
+    except Exception as e:
+        return f"Erreur lors du chiffrement : {str(e)}"
+
+# ✅ Route pour déchiffrer avec une clé fournie
+@app.route('/decrypt/<key>/<token>')
+def decryptage(key, token):
+    try:
+        f = Fernet(key.encode())  # On utilise la clé fournie
+        token_bytes = token.encode()
+        valeur_decryptee = f.decrypt(token_bytes)
+        return f"Valeur décryptée : {valeur_decryptee.decode()}"
+    except Exception as e:
+        return f"Erreur lors du déchiffrement : {str(e)}"
 
 if __name__ == "__main__":
     app.run(debug=True)
