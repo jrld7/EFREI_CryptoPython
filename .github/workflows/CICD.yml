@@ -9,9 +9,10 @@ jobs:
         with:
           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          password: ${{ secrets.SSH_KEY }}
           script: |
             cd $HOME/www/
+            echo "Connexion réussie à Alwaysdata !"
   Copy:
     needs: Connexion
     runs-on: ubuntu-latest
