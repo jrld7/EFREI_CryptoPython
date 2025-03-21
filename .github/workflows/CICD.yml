@@ -15,7 +15,7 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" | base64 --decode > id_rsa
           chmod 600 id_rsa
           ls -l id_rsa
-          cat id_rsa | head -n 5  # Vérifie que la clé est bien écrite
+          cat id_rsa | head -n 5  # Vérifie bien que la clé est écrite
 
       - name: Connexion SSH avec le serveur Alwaysdata
         run: |
