@@ -13,6 +13,26 @@ def hello_world():
         <li>/encrypt/&lt;key&gt;/&lt;valeur&gt;</li>
         <li>/decrypt/&lt;key&gt;/&lt;token&gt;</li>
     </ul>
+    <style>
+  body {
+    background-color: #2a2e3a;
+    color: white;
+    font-family: 'Verdana';
+  }
+
+  h1 {
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #383e50;
+    transition: all 0.2s;
+  }
+
+  h1:hover {
+    background-color: white;
+    color: #2a2e3a;
+  }
+</style>
     """
 
 # ✅ Génération de clé unique
